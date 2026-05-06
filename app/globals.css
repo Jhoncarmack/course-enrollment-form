@@ -244,3 +244,20 @@ dd {
    justify-content: flex-end;
    gap: 8px;
 }
+.group-section {
+   margin-top: 32px;
+   padding-top: 24px;
+   border-top: 1px solid #e5e7eb;
+}
+
+.participants-list {
+   margin-top: 24px;
+}
+
+.participant-card {
+   margin-top: 16px;
+   padding: 16px;
+   border: 1px solid #e5e7eb;
+   border-radius: 12px;
+   background: #f9fafb;
+}

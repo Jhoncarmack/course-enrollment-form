@@ -3,10 +3,14 @@
 import { useState } from "react";
 import CourseStep from "@/components/courseStep";
 import ApplicantStep from "@/components/ApplicantStep";
-import { validateApplicantInfo } from "@/lib/validations";
+import { validateApplicantInfo, validateGroupInfo } from "@/lib/validations";
 import type { Course } from "@/types/course";
-import type { ApplicantInfo, EnrollmentType } from "@/types/enrollment";
-import type { ApplicantErrors } from "@/lib/validations";
+import type {
+   ApplicantInfo,
+   EnrollmentType,
+   GroupInfo,
+} from "@/types/enrollment";
+import type { ApplicantErrors, GroupErrors } from "@/lib/validations";
 
 type Step = 1 | 2 | 3;
 
@@ -17,13 +21,60 @@ const initialApplicant: ApplicantInfo = {
    motivation: "",
 };
 
+function createInitialGroupInfo(): GroupInfo {
+   return {
+      organizationName: "",
+      headCount: 2,
+      participants: [
+         { name: "", email: "" },
+         { name: "", email: "" },
+      ],
+      contactPerson: "",
+   };
+}
+
+function hasGroupInfoValue(groupInfo: GroupInfo) {
+   return (
+      groupInfo.organizationName.trim() ||
+      groupInfo.contactPerson.trim() ||
+      groupInfo.participants.some(
+         (participant) => participant.name.trim() || participant.email.trim(),
+      )
+   );
+}
+
 export default function Home() {
    const [currentStep, setCurrentStep] = useState<Step>(1);
    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
    const [enrollmentType, setEnrollmentType] =
       useState<EnrollmentType>("personal");
    const [applicant, setApplicant] = useState<ApplicantInfo>(initialApplicant);
+   const [groupInfo, setGroupInfo] = useState<GroupInfo>(
+      createInitialGroupInfo,
+   );
    const [applicantErrors, setApplicantErrors] = useState<ApplicantErrors>({});
+   const [groupErrors, setGroupErrors] = useState<GroupErrors>({});
+
+   function handleChangeEnrollmentType(type: EnrollmentType) {
+      if (
+         enrollmentType === "group" &&
+         type === "personal" &&
+         hasGroupInfoValue(groupInfo)
+      ) {
+         const confirmed = window.confirm(
+            "개인 신청으로 변경하면 입력한 단체 신청 정보가 초기화됩니다. 변경하시겠습니까?",
+         );
+
+         if (!confirmed) {
+            return;
+         }
+
+         setGroupInfo(createInitialGroupInfo());
+         setGroupErrors({});
+      }
+
+      setEnrollmentType(type);
+   }
 
    function goToNextFromCourse() {
       if (!selectedCourse) {
@@ -34,10 +85,17 @@ export default function Home() {
    }
 
    function goToNextFromApplicant() {
-      const errors = validateApplicantInfo(applicant);
-      setApplicantErrors(errors);
+      const nextApplicantErrors = validateApplicantInfo(applicant);
+      const nextGroupErrors =
+         enrollmentType === "group" ? validateGroupInfo(groupInfo) : {};
 
-      if (Object.keys(errors).length > 0) {
+      setApplicantErrors(nextApplicantErrors);
+      setGroupErrors(nextGroupErrors);
+
+      if (
+         Object.keys(nextApplicantErrors).length > 0 ||
+         Object.keys(nextGroupErrors).length > 0
+      ) {
          return;
       }
 
@@ -66,7 +124,7 @@ export default function Home() {
                   selectedCourse={selectedCourse}
                   onSelectCourse={setSelectedCourse}
                   enrollmentType={enrollmentType}
-                  onChangeEnrollmentType={setEnrollmentType}
+                  onChangeEnrollmentType={handleChangeEnrollmentType}
                />
 
                <div className="actions">
@@ -85,9 +143,13 @@ export default function Home() {
          {currentStep === 2 && (
             <>
                <ApplicantStep
+                  enrollmentType={enrollmentType}
                   applicant={applicant}
-                  errors={applicantErrors}
+                  groupInfo={groupInfo}
+                  applicantErrors={applicantErrors}
+                  groupErrors={groupErrors}
                   onChangeApplicant={setApplicant}
+                  onChangeGroupInfo={setGroupInfo}
                />
 
                <div className="actions">
@@ -129,6 +191,23 @@ export default function Home() {
                   <p>전화번호: {applicant.phone}</p>
                   {applicant.motivation && (
                      <p>수강 동기: {applicant.motivation}</p>
+                  )}
+
+                  {enrollmentType === "group" && (
+                     <>
+                        <h4>단체 정보</h4>
+                        <p>단체명: {groupInfo.organizationName}</p>
+                        <p>신청 인원수: {groupInfo.headCount}명</p>
+                        <p>담당자 연락처: {groupInfo.contactPerson}</p>
+
+                        <ul>
+                           {groupInfo.participants.map((participant, index) => (
+                              <li key={index}>
+                                 {participant.name} / {participant.email}
+                              </li>
+                           ))}
+                        </ul>
+                     </>
                   )}
                </div>
 

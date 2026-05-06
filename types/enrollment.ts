@@ -5,3 +5,14 @@ export interface ApplicantInfo {
    phone: string;
    motivation: string;
 }
+export interface Participant {
+   name: string;
+   email: string;
+}
+
+export interface GroupInfo {
+   organizationName: string;
+   headCount: number;
+   participants: Participant[];
+   contactPerson: string;
+}
