@@ -190,3 +190,57 @@ dd {
 .error-message {
    color: #dc2626;
 }
+.form-group {
+   margin-top: 20px;
+}
+
+.form-group label {
+   display: block;
+   margin-bottom: 8px;
+   font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+   width: 100%;
+   box-sizing: border-box;
+   padding: 10px 12px;
+   border: 1px solid #d1d5db;
+   border-radius: 8px;
+   font: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+   outline: none;
+   border-color: #111827;
+}
+
+.field-error {
+   margin: 6px 0 0;
+   color: #dc2626;
+   font-size: 14px;
+}
+
+.textarea-footer {
+   display: flex;
+   justify-content: flex-end;
+   margin-top: 6px;
+   color: #6b7280;
+   font-size: 14px;
+}
+
+.secondary-button {
+   padding: 10px 16px;
+   border: 1px solid #d1d5db;
+   border-radius: 8px;
+   background: white;
+   color: #111827;
+   cursor: pointer;
+}
+
+.actions {
+   display: flex;
+   justify-content: flex-end;
+   gap: 8px;
+}
