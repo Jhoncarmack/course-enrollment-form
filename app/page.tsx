@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import CourseStep from "@/components/CourseStep";
 import ApplicantStep from "@/components/ApplicantStep";
@@ -20,7 +20,16 @@ import type {
 import type { ApplicantErrors, GroupErrors } from "@/lib/validations";
 
 type Step = 1 | 2 | 3;
+const DRAFT_STORAGE_KEY = "course-enrollment-form-draft";
 
+interface EnrollmentDraft {
+   currentStep: Step;
+   selectedCourse: Course | null;
+   enrollmentType: EnrollmentType;
+   applicant: ApplicantInfo;
+   groupInfo: GroupInfo;
+   agreedToTerms: boolean;
+}
 const initialApplicant: ApplicantInfo = {
    name: "",
    email: "",
@@ -75,6 +84,56 @@ export default function Home() {
    const [agreedToTerms, setAgreedToTerms] = useState(false);
    const [enrollmentResult, setEnrollmentResult] =
       useState<EnrollmentResponse | null>(null);
+   const [isDraftLoaded, setIsDraftLoaded] = useState(false);
+   useEffect(() => {
+      const savedDraft = window.localStorage.getItem(DRAFT_STORAGE_KEY);
+
+      if (!savedDraft) {
+         setIsDraftLoaded(true);
+         return;
+      }
+
+      try {
+         const parsedDraft = JSON.parse(savedDraft) as EnrollmentDraft;
+
+         setCurrentStep(parsedDraft.currentStep);
+         setSelectedCourse(parsedDraft.selectedCourse);
+         setEnrollmentType(parsedDraft.enrollmentType);
+         setApplicant(parsedDraft.applicant);
+         setGroupInfo(parsedDraft.groupInfo);
+         setAgreedToTerms(parsedDraft.agreedToTerms);
+      } catch {
+         window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+      } finally {
+         setIsDraftLoaded(true);
+      }
+   }, []);
+
+   useEffect(() => {
+      if (!isDraftLoaded || enrollmentResult) {
+         return;
+      }
+
+      const draft: EnrollmentDraft = {
+         currentStep,
+         selectedCourse,
+         enrollmentType,
+         applicant,
+         groupInfo,
+         agreedToTerms,
+      };
+
+      window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+   }, [
+      isDraftLoaded,
+      enrollmentResult,
+      currentStep,
+      selectedCourse,
+      enrollmentType,
+      applicant,
+      groupInfo,
+      agreedToTerms,
+   ]);
 
    const enrollmentMutation = useMutation<
       EnrollmentResponse,
@@ -83,6 +142,7 @@ export default function Home() {
    >({
       mutationFn: submitEnrollment,
       onSuccess: (data) => {
+         window.localStorage.removeItem(DRAFT_STORAGE_KEY);
          setEnrollmentResult(data);
       },
    });
