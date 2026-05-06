@@ -69,6 +69,14 @@ function createApplicantPayload(applicant: ApplicantInfo) {
       ...(motivation ? { motivation } : {}),
    };
 }
+function hasApplicantValue(applicant: ApplicantInfo) {
+   return (
+      applicant.name.trim() ||
+      applicant.email.trim() ||
+      applicant.phone.trim() ||
+      applicant.motivation.trim()
+   );
+}
 
 export default function Home() {
    const [currentStep, setCurrentStep] = useState<Step>(1);
@@ -85,6 +93,14 @@ export default function Home() {
    const [enrollmentResult, setEnrollmentResult] =
       useState<EnrollmentResponse | null>(null);
    const [isDraftLoaded, setIsDraftLoaded] = useState(false);
+   const shouldWarnBeforeLeave =
+      isDraftLoaded &&
+      !enrollmentResult &&
+      (selectedCourse !== null ||
+         hasApplicantValue(applicant) ||
+         hasGroupInfoValue(groupInfo) ||
+         agreedToTerms ||
+         currentStep !== 1);
    useEffect(() => {
       const savedDraft = window.localStorage.getItem(DRAFT_STORAGE_KEY);
 
@@ -134,7 +150,22 @@ export default function Home() {
       groupInfo,
       agreedToTerms,
    ]);
+   useEffect(() => {
+      if (!shouldWarnBeforeLeave) {
+         return;
+      }
 
+      function handleBeforeUnload(event: BeforeUnloadEvent) {
+         event.preventDefault();
+         event.returnValue = "";
+      }
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      return () => {
+         window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
+   }, [shouldWarnBeforeLeave]);
    const enrollmentMutation = useMutation<
       EnrollmentResponse,
       ErrorResponse,
