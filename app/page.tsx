@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import CourseStep from "@/components/courseStep";
+import { useMutation } from "@tanstack/react-query";
+import CourseStep from "@/components/CourseStep";
 import ApplicantStep from "@/components/ApplicantStep";
+import ConfirmStep from "@/components/ConfirmStep";
+import CompletionPage from "@/components/CompletionPage";
+import { submitEnrollment } from "@/lib/api";
 import { validateApplicantInfo, validateGroupInfo } from "@/lib/validations";
 import type { Course } from "@/types/course";
 import type {
    ApplicantInfo,
+   EnrollmentRequest,
+   EnrollmentResponse,
    EnrollmentType,
+   ErrorResponse,
    GroupInfo,
 } from "@/types/enrollment";
 import type { ApplicantErrors, GroupErrors } from "@/lib/validations";
@@ -43,6 +50,17 @@ function hasGroupInfoValue(groupInfo: GroupInfo) {
    );
 }
 
+function createApplicantPayload(applicant: ApplicantInfo) {
+   const motivation = applicant.motivation.trim();
+
+   return {
+      name: applicant.name.trim(),
+      email: applicant.email.trim(),
+      phone: applicant.phone.trim(),
+      ...(motivation ? { motivation } : {}),
+   };
+}
+
 export default function Home() {
    const [currentStep, setCurrentStep] = useState<Step>(1);
    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -54,6 +72,20 @@ export default function Home() {
    );
    const [applicantErrors, setApplicantErrors] = useState<ApplicantErrors>({});
    const [groupErrors, setGroupErrors] = useState<GroupErrors>({});
+   const [agreedToTerms, setAgreedToTerms] = useState(false);
+   const [enrollmentResult, setEnrollmentResult] =
+      useState<EnrollmentResponse | null>(null);
+
+   const enrollmentMutation = useMutation<
+      EnrollmentResponse,
+      ErrorResponse,
+      EnrollmentRequest
+   >({
+      mutationFn: submitEnrollment,
+      onSuccess: (data) => {
+         setEnrollmentResult(data);
+      },
+   });
 
    function handleChangeEnrollmentType(type: EnrollmentType) {
       if (
@@ -100,6 +132,83 @@ export default function Home() {
       }
 
       setCurrentStep(3);
+   }
+
+   function buildEnrollmentRequest(): EnrollmentRequest | null {
+      if (!selectedCourse) {
+         return null;
+      }
+
+      const applicantPayload = createApplicantPayload(applicant);
+
+      if (enrollmentType === "personal") {
+         return {
+            courseId: selectedCourse.id,
+            type: "personal",
+            applicant: applicantPayload,
+            agreedToTerms,
+         };
+      }
+
+      return {
+         courseId: selectedCourse.id,
+         type: "group",
+         applicant: applicantPayload,
+         group: {
+            organizationName: groupInfo.organizationName.trim(),
+            headCount: groupInfo.headCount,
+            participants: groupInfo.participants
+               .slice(0, groupInfo.headCount)
+               .map((participant) => ({
+                  name: participant.name.trim(),
+                  email: participant.email.trim(),
+               })),
+            contactPerson: groupInfo.contactPerson.trim(),
+         },
+         agreedToTerms,
+      };
+   }
+
+   function handleSubmit() {
+      const nextApplicantErrors = validateApplicantInfo(applicant);
+      const nextGroupErrors =
+         enrollmentType === "group" ? validateGroupInfo(groupInfo) : {};
+
+      setApplicantErrors(nextApplicantErrors);
+      setGroupErrors(nextGroupErrors);
+
+      if (!selectedCourse) {
+         setCurrentStep(1);
+         return;
+      }
+
+      if (
+         Object.keys(nextApplicantErrors).length > 0 ||
+         Object.keys(nextGroupErrors).length > 0
+      ) {
+         setCurrentStep(2);
+         return;
+      }
+
+      const payload = buildEnrollmentRequest();
+
+      if (!payload) {
+         return;
+      }
+
+      enrollmentMutation.mutate(payload);
+   }
+
+   if (enrollmentResult && selectedCourse) {
+      return (
+         <CompletionPage
+            enrollment={enrollmentResult}
+            selectedCourse={selectedCourse}
+            enrollmentType={enrollmentType}
+            applicant={applicant}
+            groupInfo={groupInfo}
+         />
+      );
    }
 
    return (
@@ -172,55 +281,19 @@ export default function Home() {
             </>
          )}
 
-         {currentStep === 3 && (
-            <section className="step-card">
-               <h2>3단계. 확인 및 제출</h2>
-               <p className="description">
-                  확인 및 제출 화면은 다음 단계에서 구현합니다.
-               </p>
-
-               <div className="selected-course">
-                  <h3>입력 확인</h3>
-                  <p>선택한 강의: {selectedCourse?.title}</p>
-                  <p>
-                     신청 유형:{" "}
-                     {enrollmentType === "personal" ? "개인 신청" : "단체 신청"}
-                  </p>
-                  <p>이름: {applicant.name}</p>
-                  <p>이메일: {applicant.email}</p>
-                  <p>전화번호: {applicant.phone}</p>
-                  {applicant.motivation && (
-                     <p>수강 동기: {applicant.motivation}</p>
-                  )}
-
-                  {enrollmentType === "group" && (
-                     <>
-                        <h4>단체 정보</h4>
-                        <p>단체명: {groupInfo.organizationName}</p>
-                        <p>신청 인원수: {groupInfo.headCount}명</p>
-                        <p>담당자 연락처: {groupInfo.contactPerson}</p>
-
-                        <ul>
-                           {groupInfo.participants.map((participant, index) => (
-                              <li key={index}>
-                                 {participant.name} / {participant.email}
-                              </li>
-                           ))}
-                        </ul>
-                     </>
-                  )}
-               </div>
-
-               <div className="actions">
-                  <button
-                     type="button"
-                     className="secondary-button"
-                     onClick={() => setCurrentStep(2)}
-                  >
-                     이전 단계
-                  </button>
-               </div>
-            </section>
+         {currentStep === 3 && selectedCourse && (
+            <ConfirmStep
+               selectedCourse={selectedCourse}
+               enrollmentType={enrollmentType}
+               applicant={applicant}
+               groupInfo={groupInfo}
+               agreedToTerms={agreedToTerms}
+               submitError={enrollmentMutation.error}
+               isSubmitting={enrollmentMutation.isPending}
+               onChangeAgreedToTerms={setAgreedToTerms}
+               onEdit={setCurrentStep}
+               onSubmit={handleSubmit}
+            />
          )}
       </main>
    );

@@ -261,3 +261,60 @@ dd {
    border-radius: 12px;
    background: #f9fafb;
 }
+.summary-section {
+   margin-top: 20px;
+   padding: 16px;
+   border: 1px solid #e5e7eb;
+   border-radius: 12px;
+   background: #f9fafb;
+}
+
+.summary-header {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 12px;
+}
+
+.summary-header h3 {
+   margin: 0;
+}
+
+.summary-header button {
+   padding: 6px 10px;
+   border: 1px solid #d1d5db;
+   border-radius: 8px;
+   background: white;
+   cursor: pointer;
+}
+
+.terms-box {
+   margin-top: 24px;
+   padding: 16px;
+   border: 1px solid #e5e7eb;
+   border-radius: 12px;
+   background: white;
+}
+
+.terms-box label {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+}
+
+.submit-error {
+   margin-top: 20px;
+   padding: 16px;
+   border: 1px solid #fecaca;
+   border-radius: 12px;
+   background: #fef2f2;
+   color: #991b1b;
+}
+
+.completion-box {
+   margin-top: 20px;
+   padding: 16px;
+   border: 1px solid #bbf7d0;
+   border-radius: 12px;
+   background: #f0fdf4;
+}
