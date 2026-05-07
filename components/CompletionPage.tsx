@@ -16,7 +16,6 @@ interface CompletionPageProps {
    groupInfo: GroupInfo;
    onReset: () => void;
 }
-
 function formatDateTime(date: string) {
    return new Date(date).toLocaleString("ko-KR");
 }
