@@ -379,4 +379,23 @@ dd {
    .participant-card {
       padding: 12px;
    }
+   .footer {
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+   }
+}
+.footer {
+   display: flex;
+   justify-content: space-between;
+   gap: 16px;
+   margin-top: 48px;
+   padding-top: 24px;
+   border-top: 1px solid #e5e7eb;
+   color: #6b7280;
+   font-size: 14px;
+}
+
+.footer p {
+   margin: 0;
 }
