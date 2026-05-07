@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 import type { Course } from "@/types/course";
 import type {
    ApplicantInfo,
@@ -28,6 +28,16 @@ export default function CompletionPage({
    groupInfo,
    onReset,
 }: CompletionPageProps) {
+   const [isCopied, setIsCopied] = useState(false);
+
+   async function handleCopyEnrollmentId() {
+      await navigator.clipboard.writeText(enrollment.enrollmentId);
+      setIsCopied(true);
+
+      setTimeout(() => {
+         setIsCopied(false);
+      }, 1500);
+   }
    return (
       <main className="container">
          <section className="step-card">
@@ -38,7 +48,16 @@ export default function CompletionPage({
             </p>
 
             <div className="completion-box">
-               <p>신청 번호: {enrollment.enrollmentId}</p>
+               <div className="copy-row">
+                  <p>신청 번호: {enrollment.enrollmentId}</p>
+                  <button
+                     type="button"
+                     className="copy-button"
+                     onClick={handleCopyEnrollmentId}
+                  >
+                     {isCopied ? "복사됨" : "신청 번호 복사"}
+                  </button>
+               </div>
                <p>
                   신청 상태:{" "}
                   {enrollment.status === "confirmed" ? "확정" : "대기"}

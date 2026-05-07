@@ -384,6 +384,14 @@ dd {
       gap: 8px;
       text-align: center;
    }
+   .copy-row {
+      align-items: stretch;
+      flex-direction: column;
+   }
+
+   .copy-button {
+      width: 100%;
+   }
 }
 .footer {
    display: flex;
@@ -398,4 +406,28 @@ dd {
 
 .footer p {
    margin: 0;
+}
+.copy-row {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 12px;
+}
+
+.copy-row p {
+   margin: 0;
+}
+
+.copy-button {
+   padding: 6px 10px;
+   border: 1px solid #d1d5db;
+   border-radius: 8px;
+   background: white;
+   color: #111827;
+   cursor: pointer;
+   font-size: 14px;
+}
+
+.copy-button:hover {
+   border-color: #111827;
 }
