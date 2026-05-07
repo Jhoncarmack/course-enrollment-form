@@ -31,7 +31,11 @@ export default function CompletionPage({
    return (
       <main className="container">
          <section className="step-card">
-            <h1>수강 신청이 완료되었습니다.</h1>
+            <h1>🎉 수강 신청이 완료되었습니다.</h1>
+            <p className="description">
+               신청이 정상적으로 접수되었습니다. 아래에서 신청 내용을 확인해
+               주세요.
+            </p>
 
             <div className="completion-box">
                <p>신청 번호: {enrollment.enrollmentId}</p>
