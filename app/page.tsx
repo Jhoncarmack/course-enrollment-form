@@ -289,6 +289,20 @@ export default function Home() {
 
       enrollmentMutation.mutate(payload);
    }
+   function handleResetForm() {
+      window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+
+      setCurrentStep(1);
+      setSelectedCourse(null);
+      setEnrollmentType("personal");
+      setApplicant(initialApplicant);
+      setGroupInfo(createInitialGroupInfo());
+      setApplicantErrors({});
+      setGroupErrors({});
+      setAgreedToTerms(false);
+      setEnrollmentResult(null);
+      enrollmentMutation.reset();
+   }
 
    if (enrollmentResult && selectedCourse) {
       return (
@@ -298,6 +312,7 @@ export default function Home() {
             enrollmentType={enrollmentType}
             applicant={applicant}
             groupInfo={groupInfo}
+            onReset={handleResetForm}
          />
       );
    }

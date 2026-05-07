@@ -14,6 +14,7 @@ interface CompletionPageProps {
    enrollmentType: EnrollmentType;
    applicant: ApplicantInfo;
    groupInfo: GroupInfo;
+   onReset: () => void;
 }
 
 function formatDateTime(date: string) {
@@ -26,6 +27,7 @@ export default function CompletionPage({
    enrollmentType,
    applicant,
    groupInfo,
+   onReset,
 }: CompletionPageProps) {
    return (
       <main className="container">
@@ -58,6 +60,15 @@ export default function CompletionPage({
                      <p>신청 인원수: {groupInfo.headCount}명</p>
                   </>
                )}
+            </div>
+            <div className="actions">
+               <button
+                  type="button"
+                  className="primary-button"
+                  onClick={onReset}
+               >
+                  처음으로 돌아가기
+               </button>
             </div>
          </section>
       </main>
