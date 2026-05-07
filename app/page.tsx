@@ -260,7 +260,13 @@ export default function Home() {
       };
    }
 
+   function handleEditStep(step: Step) {
+      enrollmentMutation.reset();
+      setCurrentStep(step);
+   }
+
    function handleSubmit() {
+      enrollmentMutation.reset();
       const nextApplicantErrors = validateApplicantInfo(applicant);
       const nextGroupErrors =
          enrollmentType === "group" ? validateGroupInfo(groupInfo) : {};
@@ -397,7 +403,7 @@ export default function Home() {
                submitError={enrollmentMutation.error}
                isSubmitting={enrollmentMutation.isPending}
                onChangeAgreedToTerms={setAgreedToTerms}
-               onEdit={setCurrentStep}
+               onEdit={handleEditStep}
                onSubmit={handleSubmit}
             />
          )}
