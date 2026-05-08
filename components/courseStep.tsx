@@ -93,6 +93,8 @@ export default function CourseStep({
          <div className="course-grid">
             {courses.map((course) => {
                const isFull = course.currentEnrollment >= course.maxCapacity;
+               const isAlmostFull =
+                  !isFull && course.maxCapacity - course.currentEnrollment <= 3;
                const isSelected = selectedCourse?.id === course.id;
 
                return (
@@ -110,6 +112,11 @@ export default function CourseStep({
                      <div className="course-card-header">
                         <strong>{course.title}</strong>
                         {isFull && <span className="badge">마감</span>}
+                        {isAlmostFull && (
+                           <span className="badge badge-warning">
+                              마감 임박
+                           </span>
+                        )}
                      </div>
 
                      <p>{course.description}</p>

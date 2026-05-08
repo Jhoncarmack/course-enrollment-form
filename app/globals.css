@@ -129,7 +129,10 @@ button {
    color: #991b1b;
    font-size: 12px;
 }
-
+.badge-warning {
+   background: #fef3c7;
+   color: #92400e;
+}
 dl {
    margin: 12px 0 0;
 }

@@ -18,7 +18,7 @@ const courses: Course[] = [
       category: "development",
       price: 120000,
       maxCapacity: 30,
-      currentEnrollment: 12,
+      currentEnrollment: 28,
       startDate: "2026-06-01T09:00:00.000Z",
       endDate: "2026-06-30T09:00:00.000Z",
       instructor: "김개발",
