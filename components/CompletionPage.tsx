@@ -7,6 +7,7 @@ import type {
    EnrollmentType,
    GroupInfo,
 } from "@/types/enrollment";
+import Footer from "./Footer";
 
 interface CompletionPageProps {
    enrollment: EnrollmentResponse;
@@ -93,6 +94,7 @@ export default function CompletionPage({
                </button>
             </div>
          </section>
+         <Footer />
       </main>
    );
 }
