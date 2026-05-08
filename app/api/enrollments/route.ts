@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
       });
    }
 
-   if (body.courseId === "course-2") {
+   // 시뮬레이션용: course-3 선택 시 COURSE_FULL 에러 반환 (README 참고)
+   if (body.courseId === "course-3") {
       return createErrorResponse(409, {
          code: "COURSE_FULL",
          message: "선택한 강의의 정원이 초과되었습니다.",
