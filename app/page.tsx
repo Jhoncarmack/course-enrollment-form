@@ -263,6 +263,10 @@ export default function Home() {
 
    function handleEditStep(step: Step) {
       enrollmentMutation.reset();
+      if (step === 1) {
+         setApplicantErrors({});
+         setGroupErrors({});
+      }
       setCurrentStep(step);
    }
    function handleClearApplicantError(field: keyof ApplicantInfo) {
@@ -437,7 +441,7 @@ export default function Home() {
                   <button
                      type="button"
                      className="secondary-button"
-                     onClick={() => setCurrentStep(1)}
+                     onClick={() => handleEditStep(1)}
                   >
                      이전 단계
                   </button>
