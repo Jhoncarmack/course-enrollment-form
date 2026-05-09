@@ -7,7 +7,11 @@ import type {
    Participant,
 } from "@/types/enrollment";
 import type { ApplicantErrors, GroupErrors } from "@/lib/validations";
-import { validateApplicantField } from "@/lib/validations";
+import {
+   validateApplicantField,
+   validateGroupField,
+   validateParticipantField,
+} from "@/lib/validations";
 
 interface ApplicantStepProps {
    enrollmentType: EnrollmentType;
@@ -22,6 +26,8 @@ interface ApplicantStepProps {
       field: keyof ApplicantInfo,
       message: string | undefined,
    ) => void;
+   onClearGroupError: (key: string) => void;
+   onSetGroupError: (key: string, message: string | undefined) => void;
 }
 
 export default function ApplicantStep({
@@ -34,6 +40,8 @@ export default function ApplicantStep({
    onChangeGroupInfo,
    onClearApplicantError,
    onSetApplicantError,
+   onClearGroupError,
+   onSetGroupError,
 }: ApplicantStepProps) {
    function handleApplicantChange(field: keyof ApplicantInfo, value: string) {
       onChangeApplicant({
@@ -46,12 +54,26 @@ export default function ApplicantStep({
       const message = validateApplicantField(field, applicant[field]);
       onSetApplicantError(field, message);
    }
+   function handleGroupBlur(field: "organizationName" | "contactPerson") {
+      const message = validateGroupField(field, groupInfo[field]);
+      onSetGroupError(field, message);
+   }
+
+   function handleParticipantBlur(index: number, field: keyof Participant) {
+      const value = groupInfo.participants[index]?.[field] ?? "";
+      const message = validateParticipantField(field, value);
+      onSetGroupError(`participants.${index}.${field}`, message);
+   }
 
    function handleGroupChange(field: keyof GroupInfo, value: string | number) {
       onChangeGroupInfo({
          ...groupInfo,
          [field]: value,
       });
+
+      if (typeof value === "string") {
+         onClearGroupError(field);
+      }
    }
 
    function handleHeadCountChange(value: number) {
@@ -87,6 +109,8 @@ export default function ApplicantStep({
          ...groupInfo,
          participants: nextParticipants,
       });
+
+      onClearGroupError(`participants.${index}.${field}`);
    }
 
    return (
@@ -197,6 +221,7 @@ export default function ApplicantStep({
                            event.target.value,
                         )
                      }
+                     onBlur={() => handleGroupBlur("organizationName")}
                      placeholder="단체명을 입력해 주세요"
                   />
                   {groupErrors.organizationName && (
@@ -245,6 +270,9 @@ export default function ApplicantStep({
                                     event.target.value,
                                  )
                               }
+                              onBlur={() =>
+                                 handleParticipantBlur(index, "name")
+                              }
                               placeholder="참가자 이름"
                            />
                            {groupErrors[`participants.${index}.name`] && (
@@ -269,6 +297,9 @@ export default function ApplicantStep({
                                     event.target.value,
                                  )
                               }
+                              onBlur={() =>
+                                 handleParticipantBlur(index, "email")
+                              }
                               placeholder="participant@email.com"
                            />
                            {groupErrors[`participants.${index}.email`] && (
@@ -290,6 +321,7 @@ export default function ApplicantStep({
                      onChange={(event) =>
                         handleGroupChange("contactPerson", event.target.value)
                      }
+                     onBlur={() => handleGroupBlur("contactPerson")}
                      placeholder="010-1234-5678"
                   />
                   {groupErrors.contactPerson && (

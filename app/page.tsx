@@ -294,6 +294,33 @@ export default function Home() {
          return { ...prev, [field]: message };
       });
    }
+   function handleClearGroupError(key: string) {
+      setGroupErrors((prev) => {
+         if (!prev[key]) {
+            return prev;
+         }
+         const next = { ...prev };
+         delete next[key];
+         return next;
+      });
+   }
+
+   function handleSetGroupError(key: string, message: string | undefined) {
+      setGroupErrors((prev) => {
+         if (message === undefined) {
+            if (!prev[key]) {
+               return prev;
+            }
+            const next = { ...prev };
+            delete next[key];
+            return next;
+         }
+         if (prev[key] === message) {
+            return prev;
+         }
+         return { ...prev, [key]: message };
+      });
+   }
 
    function handleSubmit() {
       enrollmentMutation.reset();
@@ -403,6 +430,8 @@ export default function Home() {
                   onChangeGroupInfo={setGroupInfo}
                   onClearApplicantError={handleClearApplicantError}
                   onSetApplicantError={handleSetApplicantError}
+                  onClearGroupError={handleClearGroupError}
+                  onSetGroupError={handleSetGroupError}
                />
                <div className="actions">
                   <button
