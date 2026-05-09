@@ -9,6 +9,7 @@ import CompletionPage from "@/components/CompletionPage";
 import Footer from "@/components/Footer";
 import { submitEnrollment } from "@/lib/api";
 import { validateApplicantInfo, validateGroupInfo } from "@/lib/validations";
+
 import type { Course } from "@/types/course";
 import type {
    ApplicantInfo,
@@ -19,6 +20,7 @@ import type {
    GroupInfo,
 } from "@/types/enrollment";
 import type { ApplicantErrors, GroupErrors } from "@/lib/validations";
+import { findFirstErrorFieldId, focusFieldById } from "@/lib/focusError";
 
 type Step = 1 | 2 | 3;
 const DRAFT_STORAGE_KEY = "course-enrollment-form-draft";
@@ -220,6 +222,15 @@ export default function Home() {
          Object.keys(nextApplicantErrors).length > 0 ||
          Object.keys(nextGroupErrors).length > 0
       ) {
+         const firstErrorId = findFirstErrorFieldId(
+            nextApplicantErrors,
+            nextGroupErrors,
+            enrollmentType === "group",
+         );
+         if (firstErrorId) {
+            // setState 반영 후 DOM이 업데이트되면 포커스 이동
+            setTimeout(() => focusFieldById(firstErrorId), 0);
+         }
          return;
       }
 
