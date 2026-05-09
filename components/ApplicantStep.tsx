@@ -16,6 +16,7 @@ interface ApplicantStepProps {
    groupErrors: GroupErrors;
    onChangeApplicant: (applicant: ApplicantInfo) => void;
    onChangeGroupInfo: (groupInfo: GroupInfo) => void;
+   onClearApplicantError: (field: keyof ApplicantInfo) => void;
 }
 
 export default function ApplicantStep({
@@ -26,12 +27,14 @@ export default function ApplicantStep({
    groupErrors,
    onChangeApplicant,
    onChangeGroupInfo,
+   onClearApplicantError,
 }: ApplicantStepProps) {
    function handleApplicantChange(field: keyof ApplicantInfo, value: string) {
       onChangeApplicant({
          ...applicant,
          [field]: value,
       });
+      onClearApplicantError(field);
    }
 
    function handleGroupChange(field: keyof GroupInfo, value: string | number) {

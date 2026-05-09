@@ -265,6 +265,16 @@ export default function Home() {
       enrollmentMutation.reset();
       setCurrentStep(step);
    }
+   function handleClearApplicantError(field: keyof ApplicantInfo) {
+      setApplicantErrors((prev) => {
+         if (!prev[field]) {
+            return prev;
+         }
+         const next = { ...prev };
+         delete next[field];
+         return next;
+      });
+   }
 
    function handleSubmit() {
       enrollmentMutation.reset();
@@ -372,8 +382,8 @@ export default function Home() {
                   groupErrors={groupErrors}
                   onChangeApplicant={setApplicant}
                   onChangeGroupInfo={setGroupInfo}
+                  onClearApplicantError={handleClearApplicantError}
                />
-
                <div className="actions">
                   <button
                      type="button"
