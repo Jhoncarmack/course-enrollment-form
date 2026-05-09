@@ -7,6 +7,7 @@ import type {
    Participant,
 } from "@/types/enrollment";
 import type { ApplicantErrors, GroupErrors } from "@/lib/validations";
+import { validateApplicantField } from "@/lib/validations";
 
 interface ApplicantStepProps {
    enrollmentType: EnrollmentType;
@@ -17,6 +18,10 @@ interface ApplicantStepProps {
    onChangeApplicant: (applicant: ApplicantInfo) => void;
    onChangeGroupInfo: (groupInfo: GroupInfo) => void;
    onClearApplicantError: (field: keyof ApplicantInfo) => void;
+   onSetApplicantError: (
+      field: keyof ApplicantInfo,
+      message: string | undefined,
+   ) => void;
 }
 
 export default function ApplicantStep({
@@ -28,6 +33,7 @@ export default function ApplicantStep({
    onChangeApplicant,
    onChangeGroupInfo,
    onClearApplicantError,
+   onSetApplicantError,
 }: ApplicantStepProps) {
    function handleApplicantChange(field: keyof ApplicantInfo, value: string) {
       onChangeApplicant({
@@ -35,6 +41,10 @@ export default function ApplicantStep({
          [field]: value,
       });
       onClearApplicantError(field);
+   }
+   function handleApplicantBlur(field: keyof ApplicantInfo) {
+      const message = validateApplicantField(field, applicant[field]);
+      onSetApplicantError(field, message);
    }
 
    function handleGroupChange(field: keyof GroupInfo, value: string | number) {
@@ -104,6 +114,7 @@ export default function ApplicantStep({
                onChange={(event) =>
                   handleApplicantChange("name", event.target.value)
                }
+               onBlur={() => handleApplicantBlur("name")}
                placeholder="이름을 입력해 주세요"
             />
             {applicantErrors.name && (
@@ -122,6 +133,7 @@ export default function ApplicantStep({
                onChange={(event) =>
                   handleApplicantChange("email", event.target.value)
                }
+               onBlur={() => handleApplicantBlur("email")}
                placeholder="example@email.com"
             />
             {applicantErrors.email && (
@@ -140,6 +152,7 @@ export default function ApplicantStep({
                onChange={(event) =>
                   handleApplicantChange("phone", event.target.value)
                }
+               onBlur={() => handleApplicantBlur("phone")}
                placeholder="010-1234-5678"
             />
             {applicantErrors.phone && (
@@ -155,6 +168,7 @@ export default function ApplicantStep({
                onChange={(event) =>
                   handleApplicantChange("motivation", event.target.value)
                }
+               onBlur={() => handleApplicantBlur("motivation")}
                placeholder="수강 동기를 입력해 주세요"
                rows={5}
                maxLength={300}

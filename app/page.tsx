@@ -275,6 +275,25 @@ export default function Home() {
          return next;
       });
    }
+   function handleSetApplicantError(
+      field: keyof ApplicantInfo,
+      message: string | undefined,
+   ) {
+      setApplicantErrors((prev) => {
+         if (message === undefined) {
+            if (!prev[field]) {
+               return prev;
+            }
+            const next = { ...prev };
+            delete next[field];
+            return next;
+         }
+         if (prev[field] === message) {
+            return prev;
+         }
+         return { ...prev, [field]: message };
+      });
+   }
 
    function handleSubmit() {
       enrollmentMutation.reset();
@@ -383,6 +402,7 @@ export default function Home() {
                   onChangeApplicant={setApplicant}
                   onChangeGroupInfo={setGroupInfo}
                   onClearApplicantError={handleClearApplicantError}
+                  onSetApplicantError={handleSetApplicantError}
                />
                <div className="actions">
                   <button
