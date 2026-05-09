@@ -212,7 +212,12 @@ dd {
    border-radius: 8px;
    font: inherit;
 }
-
+.form-group textarea {
+   resize: vertical;
+   min-height: 80px;
+   overflow-wrap: break-word;
+   word-break: break-word;
+}
 .form-group input:focus,
 .form-group textarea:focus {
    outline: none;
@@ -433,4 +438,9 @@ dd {
 
 .copy-button:hover {
    border-color: #111827;
+}
+.summary-section p,
+.completion-box p {
+   word-break: break-word;
+   overflow-wrap: break-word;
 }
