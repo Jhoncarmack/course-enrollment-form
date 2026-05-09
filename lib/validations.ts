@@ -96,3 +96,104 @@ export function validateGroupInfo(group: GroupInfo): GroupErrors {
 
    return errors;
 }
+// 단일 신청자 필드 검증 (blur 시 사용)
+export function validateApplicantField(
+   field: keyof ApplicantInfo,
+   value: string,
+): string | undefined {
+   const trimmed = value.trim();
+
+   switch (field) {
+      case "name":
+         if (!trimmed) {
+            return "이름을 입력해 주세요.";
+         }
+         if (trimmed.length < 2 || trimmed.length > 20) {
+            return "이름은 2자 이상 20자 이하로 입력해 주세요.";
+         }
+         return undefined;
+
+      case "email":
+         if (!trimmed) {
+            return "이메일을 입력해 주세요.";
+         }
+         if (!emailRegex.test(trimmed)) {
+            return "올바른 이메일 형식으로 입력해 주세요.";
+         }
+         return undefined;
+
+      case "phone":
+         if (!trimmed) {
+            return "전화번호를 입력해 주세요.";
+         }
+         if (!koreanPhoneRegex.test(trimmed)) {
+            return "올바른 한국 전화번호 형식으로 입력해 주세요.";
+         }
+         return undefined;
+
+      case "motivation":
+         if (trimmed.length > 300) {
+            return "수강 동기는 최대 300자까지 입력할 수 있습니다.";
+         }
+         return undefined;
+
+      default:
+         return undefined;
+   }
+}
+
+// 단일 단체 필드 검증 (blur 시 사용)
+export function validateGroupField(
+   field: "organizationName" | "contactPerson",
+   value: string,
+): string | undefined {
+   const trimmed = value.trim();
+
+   switch (field) {
+      case "organizationName":
+         if (!trimmed) {
+            return "단체명을 입력해 주세요.";
+         }
+         return undefined;
+
+      case "contactPerson":
+         if (!trimmed) {
+            return "담당자 연락처를 입력해 주세요.";
+         }
+         if (!koreanPhoneRegex.test(trimmed)) {
+            return "올바른 한국 전화번호 형식으로 입력해 주세요.";
+         }
+         return undefined;
+
+      default:
+         return undefined;
+   }
+}
+
+// 단일 참가자 필드 검증 (blur 시 사용)
+export function validateParticipantField(
+   field: "name" | "email",
+   value: string,
+): string | undefined {
+   const trimmed = value.trim();
+
+   switch (field) {
+      case "name":
+         if (!trimmed) {
+            return "참가자 이름을 입력해 주세요.";
+         }
+         return undefined;
+
+      case "email":
+         if (!trimmed) {
+            return "참가자 이메일을 입력해 주세요.";
+         }
+         if (!emailRegex.test(trimmed)) {
+            return "올바른 이메일 형식으로 입력해 주세요.";
+         }
+         return undefined;
+
+      default:
+         return undefined;
+   }
+}
