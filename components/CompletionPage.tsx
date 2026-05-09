@@ -81,6 +81,19 @@ export default function CompletionPage({
                   <>
                      <p>단체명: {groupInfo.organizationName}</p>
                      <p>신청 인원수: {groupInfo.headCount}명</p>
+                     <p>담당자 연락처: {groupInfo.contactPerson}</p>
+
+                     <h3>참가자 명단</h3>
+                     <ul>
+                        {groupInfo.participants
+                           .slice(0, groupInfo.headCount)
+                           .map((participant, index) => (
+                              <li key={index}>
+                                 참가자 {index + 1}: {participant.name} /{" "}
+                                 {participant.email}
+                              </li>
+                           ))}
+                     </ul>
                   </>
                )}
             </div>
