@@ -67,7 +67,7 @@ course-enrollment-form/
 ├── components/
 │   ├── ApplicantStep.tsx           # 2단계: 신청자 정보 입력 (개인/단체 조건부 필드)
 │   ├── CompletionPage.tsx          # 신청 완료 화면
-│   ├── ConfirmStep.tsx              # 3단계: 입력 내용 확인 및 제출
+│   ├── ConfirmStep.tsx             # 3단계: 입력 내용 확인 및 제출
 │   ├── CourseStep.tsx              # 1단계: 강의 선택 + 신청 유형 선택
 │   └── Footer.tsx                  # 모든 화면 공통 푸터
 ├── lib/
